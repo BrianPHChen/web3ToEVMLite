@@ -10,7 +10,8 @@ var tendermintAPIHost = 'http://'+env.tendermintHost+':'+env.tendermintPort
 const server = jayson.server({
   net_listening: (args, callback) => {
     // web3.eth.net.isListening
-    request.get(tendermintAPIHost+'/info', (err, rep) => {
+    console.log("curl http://[api_addr]/info")
+    request.get(tendermintAPIHost + '/info', (err, rep) => {
       if (err) {
         console.log(err);
         callback({code: 404, message: err.code + " on tendermint node"});
@@ -26,8 +27,17 @@ const server = jayson.server({
     });
   },
   eth_coinbase: (args, callback) => {
-    callback(null, true);
-    console.log("web3.eth.getCoinbase");    
+    // web3.eth.getCoinbase
+    console.log("curl http://[api_addr]/accounts")
+    request.get(tendermintAPIHost + '/accounts', (err, rep) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var body = JSON.parse(rep.body);
+        console.log(body)
+        callback(null, body.accounts[0].address);
+      }
+    });
   },
   eth_blockNumber: (args, callback) => {
     callback(null, true);
