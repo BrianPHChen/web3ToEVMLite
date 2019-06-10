@@ -5,19 +5,20 @@ const app = express()
 const env = require('./env');
 const request = require('request');
 
-var tendermintAPIHost = 'http://'+env.tendermintHost+':'+env.tendermintPort
+var evmliteAPI = 'http://' + env.apiHost + ':' + env.evmlitePort;
+var tendermintAPI = 'http://' + env.apiHost + ':' + env.tendermintPort;
 
 const server = jayson.server({
   net_listening: (args, callback) => {
     // web3.eth.net.isListening
-    console.log("curl http://[api_addr]/info")
-    request.get(tendermintAPIHost + '/info', (err, rep) => {
+    console.log("curl http://[api_addr]/info");
+    request.get(evmliteAPI + '/info', (err, rep) => {
       if (err) {
         console.log(err);
         callback({code: 404, message: err.code + " on tendermint node"});
       } else {
         var body = JSON.parse(rep.body);
-        console.log(body);
+        //console.log(body);
         if (body.type === 'tendermint') {
           callback(null, true);
         } else {
@@ -28,20 +29,30 @@ const server = jayson.server({
   },
   eth_coinbase: (args, callback) => {
     // web3.eth.getCoinbase
-    console.log("curl http://[api_addr]/accounts")
-    request.get(tendermintAPIHost + '/accounts', (err, rep) => {
+    console.log("curl http://[api_addr]/accounts");
+    request.get(evmliteAPI + '/accounts', (err, rep) => {
       if (err) {
         console.log(err);
       } else {
         var body = JSON.parse(rep.body);
-        console.log(body)
-        callback(null, body.accounts[0].address);
+        var coinbase = body.accounts[0].address
+        callback(null, coinbase);
       }
     });
   },
   eth_blockNumber: (args, callback) => {
-    callback(null, true);
-    console.log("web3.eth.getBlockNumber");    
+    // web3.eth.getBlockNumber
+    console.log("curl http://[api_addr]/block");
+    request.get(tendermintAPI + '/block', (err, rep) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var body = JSON.parse(rep.body);
+        var height = body.result.block.header.height;
+        //console.log(height);
+        callback(null, height);
+      }
+    });
   },
   eth_getBlockByNumber: (args, callback) => {
     callback(null, true);

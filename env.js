@@ -1,4 +1,5 @@
 module.exports = {
-  tendermintHost: 'localhost',
-  tendermintPort: '8080',
+  apiHost: 'localhost',
+  evmlitePort: '8080',
+  tendermintPort: '26657',
 };
