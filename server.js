@@ -3,11 +3,27 @@ const bodyParser = require('body-parser')
 const jayson = require('jayson')
 const app = express()
 const env = require('./env');
+const request = require('request');
+
+var tendermintAPIHost = 'http://'+env.tendermintHost+':'+env.tendermintPort
 
 const server = jayson.server({
   net_listening: (args, callback) => {
-    callback(null, true);
-    console.log("web3.eth.net.isListening");
+    // web3.eth.net.isListening
+    request.get(tendermintAPIHost+'/info', (err, rep) => {
+      if (err) {
+        console.log(err);
+        callback({code: 404, message: err.code + " on tendermint node"});
+      } else {
+        var body = JSON.parse(rep.body);
+        console.log(body);
+        if (body.type === 'tendermint') {
+          callback(null, true);
+        } else {
+          callback({code: 404, message: "tendermint node not found"})
+        }
+      }
+    });
   },
   eth_coinbase: (args, callback) => {
     callback(null, true);
