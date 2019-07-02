@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "ethereum-tx-decoder": "^2.0.1",
+    "ethereumjs-tx": "^1.3.7",
     "express": "^4.17.1",
     "jayson": "^3.0.2",
     "moment": "^2.24.0",

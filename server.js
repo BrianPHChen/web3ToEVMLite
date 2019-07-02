@@ -5,6 +5,8 @@ const app = express()
 const env = require('./env');
 const request = require('request');
 const moment = require('moment');
+const EthereumTx = require('ethereumjs-tx')
+var txDecoder = require('ethereum-tx-decoder');
 
 var evmliteAPI = 'http://' + env.apiHost + ':' + env.evmlitePort;
 var tendermintAPI = 'http://' + env.apiHost + ':' + env.tendermintPort;
@@ -66,10 +68,19 @@ const server = jayson.server({
         var body = JSON.parse(rep.body);
         var tendermintblock = body.result.block;
         var timestamp = moment(tendermintblock.header.time).unix();
+        var txs = [];
+        for (let val of tendermintblock.data.txs) {
+          let buffer = Buffer.from(val, 'base64');
+          let rawtx = '0x' + buffer.toString('hex');
+          let decodedTx = txDecoder.decodeTx(rawtx);
+          let ethereumTx = new EthereumTx(decodedTx);
+          let txHash = ethereumTx.hash();
+          txs.push('0x' + txHash.toString('hex'));
+        }
         var returnBlock = {
-          "number": height.toString(16),
+          "number": Number(height).toString(16),
           "timestamp": timestamp.toString(16),
-          "transactions": tendermintblock.data.txs,
+          "transactions": txs,
         }
         callback(null, returnBlock);
       }
