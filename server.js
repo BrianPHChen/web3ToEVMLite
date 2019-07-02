@@ -60,6 +60,7 @@ const server = jayson.server({
   eth_getBlockByNumber: (args, callback) => {
     // web3.eth.getBlock
     console.log("POST /getBlock");
+    console.log("block: " + args[0]);
     var height = parseInt(args[0]);
     request.get(tendermintAPI + '/block?height=' + height, (err, rep) => {
       if (err) {
@@ -89,6 +90,19 @@ const server = jayson.server({
   eth_sendRawTransaction: (args, callback) => {
     callback(null, true);
     console.log("web3.eth.sendSignedTransaction");    
+  },
+  eth_getTransactionCount: (args, callback) => {
+    // web3.eth.getTransactionCount
+    console.log("POST /getTransactionCount");
+    console.log("address: " + args[0]);
+    request.get(evmliteAPI + '/account/' + args[0], (err, rep) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var body = JSON.parse(rep.body);
+        callback(null, body.nonce);
+      }
+    });
   },
   }
   // , {
