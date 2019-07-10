@@ -15,12 +15,12 @@ const server = jayson.server({
   net_listening: (args, callback) => {
     // web3.eth.net.isListening
     console.log("Get /isListening");
-    request.get(evmliteAPI + '/info', (err, rep) => {
+    request.get(evmliteAPI + '/info', (err, res) => {
       if (err) {
         console.log(err);
         callback({code: 404, message: err.code + " on tendermint node"});
       } else {
-        var body = JSON.parse(rep.body);
+        var body = JSON.parse(res.body);
         //console.log(body);
         if (body.type === 'tendermint') {
           callback(null, true);
@@ -33,11 +33,11 @@ const server = jayson.server({
   eth_coinbase: (args, callback) => {
     // web3.eth.getCoinbase
     console.log("GET /getCoinbase");
-    request.get(evmliteAPI + '/accounts', (err, rep) => {
+    request.get(evmliteAPI + '/accounts', (err, res) => {
       if (err) {
         console.log(err);
       } else {
-        var body = JSON.parse(rep.body);
+        var body = JSON.parse(res.body);
         var coinbase = body.accounts[0].address
         callback(null, coinbase);
       }
@@ -46,11 +46,11 @@ const server = jayson.server({
   eth_blockNumber: (args, callback) => {
     // web3.eth.getBlockNumber
     console.log("GET /getBlockNumber");
-    request.get(tendermintAPI + '/block', (err, rep) => {
+    request.get(tendermintAPI + '/block', (err, res) => {
       if (err) {
         console.log(err);
       } else {
-        var body = JSON.parse(rep.body);
+        var body = JSON.parse(res.body);
         var height = body.result.block.header.height;
         //console.log(height);
         callback(null, height);
@@ -62,11 +62,11 @@ const server = jayson.server({
     console.log("POST /getBlock");
     console.log("block: " + args[0]);
     var height = parseInt(args[0]);
-    request.get(tendermintAPI + '/block?height=' + height, (err, rep) => {
+    request.get(tendermintAPI + '/block?height=' + height, (err, res) => {
       if (err) {
         console.log(err);
       } else {
-        var body = JSON.parse(rep.body);
+        var body = JSON.parse(res.body);
         var tendermintblock = body.result.block;
         var timestamp = moment(tendermintblock.header.time).unix();
         var txs = [];
@@ -88,18 +88,33 @@ const server = jayson.server({
     });
   },
   eth_sendRawTransaction: (args, callback) => {
-    callback(null, true);
-    console.log("web3.eth.sendSignedTransaction");    
+    console.log("POST /sendSignedTransaction");
+    console.log("signedTx: " + args[0]);
+    request.post({
+      url: evmliteAPI + '/rawtx',
+      body: args[0],
+    }, (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        try {
+          var body = JSON.parse(res.body);
+          callback(null, body);
+        } catch {
+          callback(null, res.body);
+        }
+      }
+    });
   },
   eth_getTransactionCount: (args, callback) => {
     // web3.eth.getTransactionCount
     console.log("POST /getTransactionCount");
     console.log("address: " + args[0]);
-    request.get(evmliteAPI + '/account/' + args[0], (err, rep) => {
+    request.get(evmliteAPI + '/account/' + args[0], (err, res) => {
       if (err) {
         console.log(err);
       } else {
-        var body = JSON.parse(rep.body);
+        var body = JSON.parse(res.body);
         callback(null, body.nonce);
       }
     });
