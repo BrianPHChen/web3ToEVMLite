@@ -87,6 +87,37 @@ const server = jayson.server({
       }
     });
   },
+  eth_gasPrice: (args, callback) => {
+    // web3.eth.getPrice
+    console.log("POST /getPrice");
+    callback(null, 0);
+  },
+  eth_sendTransaction: (args, callback) => {
+    // web3.eth.sendTransaction
+    console.log("POST /sendTransaction");
+    let data = JSON.stringify(args[0], (key, value) => {
+      if (key === 'value' || key === 'gasPrice') {
+        return parseInt(value, 16);
+      }
+      return value;
+    });
+    console.log("transactionObject: " + data);
+    request.post({
+      url: evmliteAPI + '/tx',
+      body: data,
+    }, (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        try {
+          var txHash = JSON.parse(res.body.txHash);
+          callback(null, txHash);
+        } catch {
+          callback(null, res.body);
+        }
+      }
+    });
+  },
   eth_sendRawTransaction: (args, callback) => {
     // web3.eth.sendSignedTransaction
     console.log("POST /sendSignedTransaction");
@@ -99,8 +130,8 @@ const server = jayson.server({
         console.log(err);
       } else {
         try {
-          var body = JSON.parse(res.body);
-          callback(null, body);
+          var txHash = JSON.parse(res.body.txHash);
+          callback(null, txHash);
         } catch {
           callback(null, res.body);
         }
@@ -123,7 +154,10 @@ const server = jayson.server({
   }
   // , {
   //   router: (method, params) => {
+  //     console.log("method:")
   //     console.log(method)
+  //     console.log("params:")
+  //     console.log(params)
   //   }
   // }
 );
