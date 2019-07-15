@@ -88,6 +88,7 @@ const server = jayson.server({
     });
   },
   eth_sendRawTransaction: (args, callback) => {
+    // web3.eth.sendSignedTransaction
     console.log("POST /sendSignedTransaction");
     console.log("signedTx: " + args[0]);
     request.post({
