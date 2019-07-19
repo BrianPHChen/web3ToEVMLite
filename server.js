@@ -92,11 +92,50 @@ const server = jayson.server({
     console.log("POST /getPrice");
     callback(null, 0);
   },
+  eth_getTransactionReceipt: (args, callback) => {
+    // web3.eth.getTransactionReceipt
+    console.log("POST /getTransactionReceipt");
+    console.log("tx: " + args[0]);
+    request.get(evmliteAPI + '/tx/' + args[0], (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var body = JSON.parse(res.body);
+        console.log(body);
+        callback(null, body);
+      }
+    });
+  },
+  eth_call: (args, callback) => {
+    console.log("POST /call");
+    let data = JSON.stringify(args[0], (key, value) => {
+      if (key === 'value' || key === 'gasPrice' || key === 'gas') {
+        return parseInt(value, 16);
+      }
+      return value;
+    });
+    console.log("transactionObject: " + data);
+    request.post({
+      url: evmliteAPI + '/call',
+      body: data,
+    }, (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        try {
+          var body = JSON.parse(res.body);
+          callback(null, body.data);
+        } catch {
+          callback(null, res.body);
+        }
+      }
+    });
+  },
   eth_sendTransaction: (args, callback) => {
     // web3.eth.sendTransaction
     console.log("POST /sendTransaction");
     let data = JSON.stringify(args[0], (key, value) => {
-      if (key === 'value' || key === 'gasPrice') {
+      if (key === 'value' || key === 'gasPrice' || key === 'gas') {
         return parseInt(value, 16);
       }
       return value;
