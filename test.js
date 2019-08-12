@@ -75,14 +75,18 @@ const EthereumTx = require('ethereumjs-tx')
 //   }
 // });
 
-var testContract = web3.eth.Contract([{"constant":true,"inputs":[],"name":"a","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_a","type":"uint256"}],"name":"setA","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}], "0x1d20D221C1407578293B12bD5b12E85122b3Eda7");
-testContract.methods.a().call({from: '0x524a413be563aa95f45af16b226b9592389ffbb8'},(err, result) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("a: " + result);
-  }
-});
+// var testContract = web3.eth.Contract([{"constant":true,"inputs":[],"name":"a","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_a","type":"uint256"}],"name":"setA","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}], "0x1d20D221C1407578293B12bD5b12E85122b3Eda7");
+// testContract.methods.a().call({from: '0x524a413be563aa95f45af16b226b9592389ffbb8'},(err, result) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log("a: " + result);
+//   }
+// });
+
+// console.log(testContract.methods.a().encodeABI());
+
+// console.log(web3.eth.accounts.create());
 
 // testContract.methods.setA(0).send({from: '0x524a413be563aa95f45af16b226b9592389ffbb8'}, (err, txHash) => {
 //   if (err) {
