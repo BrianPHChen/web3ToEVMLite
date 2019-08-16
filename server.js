@@ -100,9 +100,13 @@ const server = jayson.server({
       if (err) {
         console.log(err);
       } else {
-        var body = JSON.parse(res.body);
-        console.log(body);
-        callback(null, body);
+        try {
+          var body = JSON.parse(res.body);
+          callback(null, body);
+        } catch (err) {
+          console.log(err);
+          callback(null, null);
+        }
       }
     });
   },
