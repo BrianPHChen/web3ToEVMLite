@@ -1,10 +1,8 @@
 FROM node:10.16
-
-WORKDIR /app
-
-COPY package.json /app
+WORKDIR /usr/src/
+COPY package.json /usr/src/
 RUN npm install
-COPY . /app
-RUN cp ./patch/decodeTransaction.js ./node_modules/ethereum-tx-decoder/src/decodeTransaction.js
+COPY . /usr/src/
+RUN bash set_env.sh
 EXPOSE 8545
-CMD ["node", "server.js"]
+ENTRYPOINT ["bash", "./entrypoint.sh"]
