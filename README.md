@@ -1,19 +1,18 @@
-# prerequisite
-1. run the evm-lite tendermint  
-`https://github.com/bear987978897/evm-lite`
-2. set the config in env.js if your environment is different, or you don't have to change
-3. npm install the dependency package  
-`npm install`
-4. overwrite the patch file
-```
-cp ./patch/decodeTransaction.js ./node_modules/ethereum-tx-decoder/src/decodeTransaction.js
-```
-# web3ToEVMLite
-tendermint host is on localhost:8080 by default
+# web3 to evmlite dockerize
+### Dockerize provider
 
-# run the rpc server
-```
-node server.js
-```  
-# how to use
+[Notice] Please run [evm_tendermint_node](https://github.com/BrianPHChen/evm_tendermint_node "evm_tendermint_node") first.
+
+#### Build image
+`$ docker build -t web3_to_evmlite .`
+
+#### Run container
+`$ docker run -tid --name provider -p 8545:8545 --link node web3_to_evmlite`
+
+#### Check the node status
+attach the container  
+`$ docker exec -ti provider bash`  
+check the logs (in container)  
+`root@<container>:# tail -f logs/provider.log`  
+#### How to use
 check the test.js as the web3.js template
