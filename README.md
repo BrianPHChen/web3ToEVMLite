@@ -9,10 +9,10 @@
 #### Run container
 `$ docker run -tid --name provider -p 8545:8545 --link node web3_to_evmlite`
 
-#### Check the node status
+#### Check the provider backend status
 attach the container  
 `$ docker exec -ti provider bash`  
 check the logs (in container)  
 `root@<container>:# tail -f logs/provider.log`  
-#### How to use
+#### How to use api with javascript
 check the test.js as the web3.js template
